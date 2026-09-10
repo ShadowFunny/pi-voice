@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# Operating system noise
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+node_modules/
+
+# NOTE: package-lock.json is deliberately NOT ignored. CI runs `npm ci`, which
+# requires it, and the published recorder binary is pinned by it.
+
+# ---------------------------------------------------------------------------
+# Scratch audio
+#
+# Recordings are written to $TMPDIR, not into the repository, so these patterns
+# are a guard against committing capture junk by accident.
+# ---------------------------------------------------------------------------
+*.pcm
+*.wav
+*.aiff
+
+# ...except the speech fixture the end-to-end tests depend on. Without this
+# exception `*.pcm` above would match it and `tests/e2e.test.ts` would fail on a
+# fresh clone with a missing-fixture error.
+!tests/fixtures/*.pcm
+
+# ---------------------------------------------------------------------------
+# Python
+#
+# Only python/transcribe.py lives here, but running anything in python/ can leave
+# caches behind, and a developer may create a virtualenv inside the repository.
+# `/voice setup` itself puts its venv in the user data directory instead, so this
+# is for hand-made ones.
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.python-version
+
+# ---------------------------------------------------------------------------
+# Secrets
+#
+# This project needs none — transcription is local and there are no API keys —
+# but a stray .env must never reach a public repository.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Build and test artifacts
+# ---------------------------------------------------------------------------
+coverage/
+*.tgz
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# ---------------------------------------------------------------------------
+# Editors
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

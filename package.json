@@ -1,0 +1,52 @@
+{
+	"name": "@shadowfunny/pi-voice",
+	"version": "0.1.0",
+	"description": "Offline /voice dictation for pi. Capture with a bundled PvRecorder binary, transcribe with a local faster-whisper. No ffmpeg and no native build step.",
+	"type": "module",
+	"license": "MIT",
+	"author": "ShadowFunny",
+	"keywords": [
+		"pi-package",
+		"pi-extension",
+		"voice",
+		"dictation",
+		"speech-to-text",
+		"stt",
+		"whisper",
+		"faster-whisper",
+		"offline",
+		"tui"
+	],
+	"homepage": "https://github.com/ShadowFunny/pi-voice#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ShadowFunny/pi-voice.git"
+	},
+	"bugs": {
+		"url": "https://github.com/ShadowFunny/pi-voice/issues"
+	},
+	"engines": {
+		"node": ">=22.19.0"
+	},
+	"pi": {
+		"extensions": [
+			"./index.ts"
+		]
+	},
+	"files": [
+		"index.ts",
+		"src/",
+		"python/"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "node --test --test-concurrency=1",
+		"test:unit": "node --test --test-concurrency=1 tests/args.test.ts tests/config.test.ts tests/devices.test.ts tests/environment.test.ts tests/index.test.ts tests/language.test.ts tests/recorder.test.ts tests/setup.test.ts tests/setup-run.test.ts",
+		"test:transcribe": "node --test --test-concurrency=1 tests/environment-probe.test.ts tests/transcriber.test.ts tests/e2e.test.ts"
+	},
+	"dependencies": {
+		"@picovoice/pvrecorder-node": "^1.2.9"
+	}
+}
