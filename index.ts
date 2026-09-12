@@ -37,7 +37,7 @@ export function describeProblems(problems: Problem[], platform: NodeJS.Platform)
 
 		if (problem.setupFixes && commands.length > 0) {
 			lines.push("");
-			lines.push("Run /voice setup to create a virtual environment and install it.");
+			lines.push("Run \"/voice setup\" to create a virtual environment and install it.");
 			lines.push("Or install it into the interpreter you already use:");
 		}
 		for (const command of commands) lines.push(`  ${command}`);
