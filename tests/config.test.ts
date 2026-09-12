@@ -28,14 +28,12 @@ test("mergeConfig rejects wrong types and keeps the default", () => {
 	assert.equal(merged.initialPrompt, DEFAULT_CONFIG.initialPrompt);
 });
 
-test("simplified Chinese steering is on by default and can be turned off", () => {
-	assert.equal(DEFAULT_CONFIG.simplifiedChinese, true);
-	assert.equal(mergeConfig({}).simplifiedChinese, true);
-	assert.equal(mergeConfig({ simplifiedChinese: false }).simplifiedChinese, false);
+test("the Chinese script is decided by language, not by a config flag", () => {
+	// There is no `simplifiedChinese` switch any more: `language` alone decides the script.
+	assert.ok(!("simplifiedChinese" in DEFAULT_CONFIG));
 
-	// A typo must degrade to the default rather than switching the feature off by accident.
-	assert.equal(mergeConfig({ simplifiedChinese: "false" }).simplifiedChinese, true);
-	assert.equal(mergeConfig({ simplifiedChinese: 0 }).simplifiedChinese, true);
+	// A stale key from an older config file is dropped like any other unknown key.
+	assert.ok(!("simplifiedChinese" in mergeConfig({ simplifiedChinese: false })));
 });
 
 test("mergeConfig ignores unknown keys", () => {

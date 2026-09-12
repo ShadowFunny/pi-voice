@@ -76,7 +76,7 @@ export function transcribe(
 ): Promise<Transcript> {
 	// The language code the user wrote and the code Whisper accepts are not the same thing, and
 	// the script they asked for rides along as a prompt rather than as a language.
-	const plan = planLanguage(cfg.language, cfg.simplifiedChinese);
+	const plan = planLanguage(cfg.language);
 
 	return new Promise((resolve, reject) => {
 		const args = buildTranscribeArgs({

@@ -13,7 +13,7 @@ export type ScriptSteering = "simplified" | "traditional";
 export interface LanguagePlan {
 	/** The code to hand to `faster-whisper`; `auto` means let Whisper detect it. */
 	whisper: string;
-	/** The script to steer Chinese output to, or undefined to leave Whisper's output alone. */
+	/** The script to steer Chinese output to, or undefined for a language that is not Chinese. */
 	steering: ScriptSteering | undefined;
 }
 
@@ -22,20 +22,21 @@ const SIMPLIFIED_TAGS = new Set(["hans", "cn", "sg"]);
 const TRADITIONAL_TAGS = new Set(["hant", "tw", "hk", "mo"]);
 
 /**
- * Resolve what to send to the transcriber and which script to steer.
+ * Resolve what to send to the transcriber and which script to steer, from the language alone.
  *
- * `auto` and plain `zh` both steer Simplified by default, because a Chinese transcript that
- * comes back Traditional is not what most dictation wants. A language code that names a
- * Traditional region or script outranks that default: it is the user asking for that script.
- * With `simplifiedChinese` off, nothing is steered in either direction and Whisper's own
- * script is used.
+ * `auto` and plain `zh` both steer Simplified, because a Chinese transcript that comes back
+ * Traditional is not what most dictation wants. A language code that names a Traditional
+ * region or script outranks that default: it is the user asking for that script. Every other
+ * language resolves to no steering, so nothing is injected for non-Chinese audio — and in
+ * `auto` mode the steering is only applied once the audio has actually been detected as
+ * Chinese.
  */
-export function planLanguage(language: string, simplifiedChinese: boolean): LanguagePlan {
+export function planLanguage(language: string): LanguagePlan {
 	const code = language.trim();
 	const lowered = code.toLowerCase();
 
 	if (lowered === "" || lowered === "auto") {
-		return { whisper: "auto", steering: simplifiedChinese ? "simplified" : undefined };
+		return { whisper: "auto", steering: "simplified" };
 	}
 
 	const match = /^zh-([a-z]+)$/.exec(lowered);
@@ -48,7 +49,7 @@ export function planLanguage(language: string, simplifiedChinese: boolean): Lang
 		}
 
 		const script = subtag !== undefined && TRADITIONAL_TAGS.has(subtag) ? "traditional" : "simplified";
-		return { whisper: "zh", steering: simplifiedChinese ? script : undefined };
+		return { whisper: "zh", steering: script };
 	}
 
 	// Every other language: passed through untouched, script untouched.

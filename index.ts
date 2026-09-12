@@ -350,7 +350,7 @@ export default function (pi: ExtensionAPI, overrides: Partial<VoiceDeps> = {}): 
 					: "using: none",
 				`faster-whisper: ${diagnosis.probe?.hasFasterWhisper ? `yes (${diagnosis.probe.fasterWhisperVersion})` : "no"}`,
 				`model cached: ${diagnosis.problems.some((p) => p.kind === "model_not_cached") ? "no" : "yes"}`,
-				`chinese script: ${planLanguage(config.language, config.simplifiedChinese).steering ?? "off"}`,
+				`chinese script: ${planLanguage(config.language).steering ?? "off"}`,
 			];
 			// Candidates that ran but could not be probed are worth naming: a hanging or
 			// half-installed interpreter would otherwise be invisible.

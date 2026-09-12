@@ -111,7 +111,7 @@ test("the steering prompt never reaches a non-Chinese recording", { skip }, () =
 test("a Traditional language code runs the Traditional prompt instead", { skip }, () => {
 	// The whole path for `language: "zh-TW"`: a script subtag becomes a Whisper code plus the
 	// script to steer.
-	const plan = planLanguage("zh-TW", true);
+	const plan = planLanguage("zh-TW");
 	const result = JSON.parse(runTranscribe(fixture(ZH_FIXTURE), {
 		language: plan.whisper,
 		steering: plan.steering,
@@ -123,6 +123,8 @@ test("a Traditional language code runs the Traditional prompt instead", { skip }
 });
 
 test("without steering the Chinese transcript is whatever Whisper chose", { skip }, () => {
+	// The raw script with no `--steer-script`: proof that the fixture really is unstable, which
+	// is what makes the steering assertions above meaningful.
 	const result = JSON.parse(runTranscribe(fixture(ZH_FIXTURE), { steering: undefined }).stdout);
 	assert.equal(result.language, "zh");
 	assert.equal(result.scriptSteering, null);

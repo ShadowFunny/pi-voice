@@ -73,11 +73,7 @@ test("the wrapper reports which script it steered", { skip }, async () => {
 	const traditional = await transcribe(zh, { ...DEFAULT_CONFIG, language: "zh-TW" });
 	assert.equal(traditional.scriptSteering, "traditional");
 
-	// Steering off leaves Whisper's own script alone.
-	const off = await transcribe(zh, { ...DEFAULT_CONFIG, simplifiedChinese: false });
-	assert.equal(off.scriptSteering, null);
-
-	// The default is on, so an English recording is the case that proves the prompt is not
+	// The language decides, so an English recording is the case that proves the prompt is not
 	// applied globally.
 	const plain = await transcribe(join(here, "fixtures", "en.pcm"), DEFAULT_CONFIG);
 	assert.equal(plain.scriptSteering, null);

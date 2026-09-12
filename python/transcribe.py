@@ -30,12 +30,12 @@ import time
 DEFAULT_SAMPLE_RATE = 16000
 
 # Whisper's Chinese output has no stable script: the same voice can come back Traditional or
-# Simplified, and there is no script subtag in its language list to ask for one. A short
-# sentence in the wanted script, placed in the decoder context, steers it without changing
-# the words. It is a bias, not a guarantee.
+# Simplified, and there is no script subtag in its language list to ask for one. A one-line
+# English instruction, placed in the decoder context, steers the script without changing the
+# words. It is a bias, not a guarantee.
 STEERING_PROMPTS = {
-    "simplified": "以下是简体中文的句子。",
-    "traditional": "以下是繁體中文的句子。",
+    "simplified": "The following transcript is written in Simplified Chinese.",
+    "traditional": "The following transcript is written in Traditional Chinese.",
 }
 
 
@@ -112,8 +112,9 @@ def main() -> None:
         fail("model_unavailable", f"{type(exc).__name__}: {exc}")
 
     # Detect the language ourselves when the caller left it open and steering is on, because
-    # the steering prompt has to be chosen before decoding. This is not extra work:
-    # transcribe() runs the same detection internally when language is None.
+    # the steering prompt has to be chosen before decoding and must not be applied blindly to
+    # non-Chinese audio. This is not extra work: transcribe() runs the same detection
+    # internally when language is None.
     language = args.language
     if language is None and args.steer_script:
         language, _probability, _all_probabilities = model.detect_language(

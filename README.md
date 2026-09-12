@@ -46,12 +46,34 @@ when that is about to happen.
 
 ## Install
 
+From npm, the published releases:
+
 ```bash
 pi install npm:@shadowfunny/pi-voice
 ```
 
-pi runs `npm install` for the package, which fetches the bundled recorder binary. Then run
-`/reload`.
+Or straight from the repository, which follows the default branch:
+
+```bash
+pi install git:github.com/ShadowFunny/pi-voice
+```
+
+Either way pi installs the package under `~/.pi/agent/` — never into your project — and runs
+`npm install` for it, which fetches the bundled recorder binary. Then run `/reload`.
+
+### Pinning a version
+
+An `@ref` on a git source is a tag or a commit, and it is **pinned**:
+
+```bash
+pi install git:github.com/ShadowFunny/pi-voice@v0.1.1
+```
+
+`pi update --extensions` and `pi update --all` reconcile the checkout to that ref but never
+move it, so a pinned package only changes when you point it at a newer one by re-running
+`pi install` with the new tag. The npm equivalent is
+`pi install npm:@shadowfunny/pi-voice@0.1.1`. SSH URLs work too, for a checkout you push
+from: `pi install git:git@github.com:ShadowFunny/pi-voice`.
 
 If a dependency is missing, `/voice doctor` reports it and `/voice setup` installs it — see
 [Requirements](#requirements).
@@ -69,7 +91,8 @@ pi remove <the-other-package>
 
 ### Installing from a checkout instead
 
-For development, or to run a branch that is not published:
+For development, where you want edits in your working tree to be live. To merely *run* a
+branch that is not published, the git install above is enough.
 
 ```bash
 git clone https://github.com/ShadowFunny/pi-voice ~/src/pi-voice
@@ -134,8 +157,7 @@ are not available — in RPC mode, or if the editor integration cannot be instal
 	"vad": true,
 	"maxSeconds": 120,
 	"sampleRate": 16000,
-	"initialPrompt": "",
-	"simplifiedChinese": true
+	"initialPrompt": ""
 }
 ```
 
@@ -148,7 +170,6 @@ are not available — in RPC mode, or if the editor integration cannot be instal
 | `maxSeconds` | Hard cap. A recording that reaches it is transcribed automatically.                                                        |
 | `vad` | Silero voice-activity filter. Leave on: it trims silence and stops Whisper hallucinating text on quiet audio.              |
 | `initialPrompt` | Bias the model with domain vocabulary.                                                  |
-| `simplifiedChinese` | Steer Chinese output to a script rather than leaving it to Whisper. On by default — see [Chinese script](#chinese-script). |
 
 A malformed config file is ignored field by field rather than fatally, so one bad value
 cannot break dictation.
@@ -191,8 +212,8 @@ unsure, and use `/voice doctor` to check the interpreter you are actually runnin
 
 Whisper has no script subtag, and its Chinese output has no stable script either: the
 committed Chinese fixture decodes to Traditional characters with nothing steering it, while
-the same speaker elsewhere comes back Simplified. So the script is asked for through the
-decoder prompt instead of through the language code:
+the same speaker elsewhere comes back Simplified. So the script is picked from `language`
+and asked for through the decoder prompt rather than through the language code itself:
 
 | `language` | Chinese output |
 | --- | --- |
@@ -201,24 +222,25 @@ decoder prompt instead of through the language code:
 | `zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO` | Traditional |
 | anything else | Whatever Whisper produces |
 
-One sentence in the wanted script is added to the decoder context when the audio is Chinese.
-A script subtag is translated to `zh` for Whisper, which is the only form it accepts.
+One English sentence naming the wanted script is added to the decoder context when the audio
+is Chinese. A script subtag is translated to `zh` for Whisper, which is the only form it
+accepts. There is no separate switch to configure: the `language` value is the whole decision.
 
 **It only ever applies to Chinese.** In `auto` mode the language is detected before decoding
 with `detect_language()`, which is the same detection `transcribe()` runs internally anyway —
 measured end to end, `1.49 s` steered against `1.84 s` unsteered on the same clip — and with
-an explicit code no detection is needed at all. That matters because a Chinese prompt left on
-globally is not harmless: measured on `base`, it left English, French, German, Japanese and
-Korean byte-identical but turned Spanish audio into unrelated Chinese characters.
+an explicit code no detection is needed at all. That matters because a prompt that assumes
+Chinese left on globally is not harmless: measured on `base`, a Chinese prompt left English,
+French, German, Japanese and Korean byte-identical but turned Spanish audio into unrelated
+Chinese characters.
 
 Your own `initialPrompt` is kept: the steering sentence is appended after it.
 
 This is a bias, not a rewrite. It does not convert characters after the fact, so it cannot
 mangle a proper noun, but it can still return a mixed-script transcript, the words are
 untouched (Taiwanese wording stays Taiwanese), and a very short recording can be detected as
-another language, in which case nothing is injected. Setting `"simplifiedChinese": false`
-turns steering off in both directions and returns Whisper's own script. `/voice doctor`
-reports whether it is on.
+another language, in which case nothing is injected. `/voice doctor` reports which script the
+current `language` will steer, or `off` for a language that is not Chinese.
 
 ## Performance
 

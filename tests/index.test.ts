@@ -332,10 +332,9 @@ test("doctor reports which Chinese script will be steered", async () => {
 	};
 
 	// `auto` and plain zh mean Simplified; an explicit Traditional code means Traditional, so the
-	// line has to follow the language rather than report the on/off flag alone.
+	// line has to follow the language rather than report a flag.
 	assert.match(await run({}), /chinese script: simplified/);
 	assert.match(await run({ language: "zh-TW" }), /chinese script: traditional/);
-	assert.match(await run({ simplifiedChinese: false }), /chinese script: off/);
 	assert.match(await run({ language: "en" }), /chinese script: off/);
 });
 

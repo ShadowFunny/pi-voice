@@ -5,7 +5,10 @@ import { dirname, join } from "node:path";
 export interface VoiceConfig {
 	/** faster-whisper model name or local path. */
 	model: string;
-	/** "auto" lets Whisper detect per utterance; otherwise a language code. */
+	/**
+	 * "auto" lets Whisper detect per utterance; otherwise a language code. The code also picks
+	 * the script Chinese output is steered to — see planLanguage.
+	 */
 	language: string;
 	/** PvRecorder input index, or null to auto-select at record time. */
 	device: number | null;
@@ -17,8 +20,6 @@ export interface VoiceConfig {
 	maxSeconds: number;
 	sampleRate: number;
 	initialPrompt: string;
-	/** Steer the script of Chinese output rather than leaving it to Whisper. */
-	simplifiedChinese: boolean;
 }
 
 export const DEFAULT_CONFIG: VoiceConfig = {
@@ -33,7 +34,6 @@ export const DEFAULT_CONFIG: VoiceConfig = {
 	maxSeconds: 120,
 	sampleRate: 16000,
 	initialPrompt: "",
-	simplifiedChinese: true,
 };
 
 export function configPath(): string {
