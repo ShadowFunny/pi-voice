@@ -1,6 +1,6 @@
 {
 	"name": "@shadowfunny/pi-voice",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Offline /voice dictation for pi. Capture with a bundled PvRecorder binary, transcribe with a local faster-whisper. No ffmpeg and no native build step.",
 	"type": "module",
 	"license": "MIT",
